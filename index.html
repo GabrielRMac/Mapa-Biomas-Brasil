@@ -18,104 +18,76 @@
 html,
 body {
 
-    margin:0;
-    padding:0;
-    height:100%;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
 
 }
 
 #map {
 
-    width:100%;
-    height:100vh;
+    width: 100%;
+    height: 100vh;
 
 }
 
 .legend {
 
-    background:white;
+    background: white;
 
-    padding:12px;
+    padding: 12px;
 
-    border-radius:8px;
+    border-radius: 10px;
 
     box-shadow:
         0 0 10px rgba(0,0,0,.25);
 
-    line-height:24px;
+    line-height: 24px;
 
 }
 
 .legend h4 {
 
-    margin:0 0 10px 0;
+    margin: 0 0 10px 0;
 
 }
 
 .legend i {
 
-    width:18px;
+    width: 18px;
 
-    height:18px;
+    height: 18px;
 
-    float:left;
+    float: left;
 
-    margin-right:8px;
+    margin-right: 8px;
 
-    opacity:.9;
+    opacity: .95;
 
 }
 
 .popup-card {
 
-    min-width:220px;
+    min-width: 220px;
 
-    max-width:320px;
+    max-width: 320px;
 
 }
 
 .popup-title {
 
-    font-size:18px;
+    font-size: 18px;
 
-    font-weight:bold;
+    font-weight: bold;
 
-    margin-bottom:8px;
+    margin-bottom: 8px;
 
 }
 
 .popup-section {
 
-    margin-top:8px;
-
-}
-
-.popup-button {
-
-    display:inline-block;
-
-    margin-top:10px;
-
-    padding:6px 12px;
-
-    border-radius:4px;
-
-    text-decoration:none;
-
-    background:#1976d2;
-
-    color:white;
-
-}
-
-.popup-button:hover {
-
-    background:#125ea8;
+    margin-top: 8px;
 
 }
 
@@ -131,11 +103,12 @@ body {
 
 <script>
 
-const map = L.map('map')
-    .setView(
-        [-15,-55],
+const map =
+    L.map('map')
+     .setView(
+        [-15, -55],
         4
-    );
+     );
 
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -150,33 +123,45 @@ let geoLayer;
 const biomasInfo = {
 
     "Amazônia": {
+
         descricao:
-            "Maior bioma brasileiro e maior floresta tropical do planeta."
+            "Maior bioma do Brasil e maior floresta tropical do planeta."
+
     },
 
     "Cerrado": {
+
         descricao:
             "Maior savana da América do Sul e importante berço das águas brasileiras."
+
     },
 
     "Caatinga": {
+
         descricao:
             "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido."
+
     },
 
     "Mata Atlântica": {
+
         descricao:
-            "Um dos biomas mais ricos em biodiversidade e mais ameaçados do mundo."
+            "Uma das florestas mais biodiversas e ameaçadas do mundo."
+
     },
 
     "Pantanal": {
+
         descricao:
             "Maior área úmida continental do planeta."
+
     },
 
     "Pampa": {
+
         descricao:
-            "Bioma formado principalmente por campos naturais do sul do Brasil."
+            "Bioma de campos naturais predominante no sul do Brasil."
+
     }
 
 };
@@ -189,13 +174,14 @@ function highlightFeature(e) {
 
         weight: 4,
 
-        color: '#000',
+        color: '#000000',
 
-        fillOpacity: 0.7
+        fillOpacity: 0.8
 
     });
 
     layer.bringToFront();
+
 }
 
 function resetHighlight(e) {
@@ -203,6 +189,7 @@ function resetHighlight(e) {
     geoLayer.resetStyle(
         e.target
     );
+
 }
 
 function zoomToFeature(e) {
@@ -210,6 +197,7 @@ function zoomToFeature(e) {
     map.fitBounds(
         e.target.getBounds()
     );
+
 }
 
 fetch('./BiomasdoBrasil.geojson')
@@ -228,24 +216,19 @@ fetch('./BiomasdoBrasil.geojson')
             return {
 
                 color:
-                    p.stroke ||
-                    '#333',
+                    p.stroke || '#333333',
 
                 weight:
-                    p['stroke-width'] ||
-                    1,
+                    p['stroke-width'] || 1,
 
                 opacity:
-                    p['stroke-opacity'] ||
-                    1,
+                    p['stroke-opacity'] || 1,
 
                 fillColor:
-                    p.fill ||
-                    '#888',
+                    p.fill || '#999999',
 
                 fillOpacity:
-                    p['fill-opacity'] ||
-                    0.5
+                    p['fill-opacity'] || 0.5
 
             };
 
@@ -261,6 +244,7 @@ fetch('./BiomasdoBrasil.geojson')
                 biomasInfo[p.Bioma];
 
             let popup =
+
             `
             <div class="popup-card">
 
@@ -292,6 +276,7 @@ fetch('./BiomasdoBrasil.geojson')
             if(info){
 
                 popup +=
+
                 `
                 <div class="popup-section">
 
@@ -329,9 +314,9 @@ fetch('./BiomasdoBrasil.geojson')
 
     if(
         geoLayer
-           .getBounds()
-           .isValid()
-    ) {
+            .getBounds()
+            .isValid()
+    ){
 
         map.fitBounds(
             geoLayer.getBounds()
@@ -339,17 +324,26 @@ fetch('./BiomasdoBrasil.geojson')
 
     }
 
+})
+
+.catch(error => {
+
+    console.error(
+        'Erro ao carregar GeoJSON:',
+        error
+    );
+
 });
 
 const legenda =
-    L.control(
-        {
-            position: 'bottomright'
-        }
-    );
+    L.control({
 
-legenda.onAdd =
-function(map) {
+        position:
+            'bottomright'
+
+    });
+
+legenda.onAdd = function() {
 
     const div =
         L.DomUtil.create(
@@ -362,38 +356,39 @@ function(map) {
         <h4>Biomas</h4>
 
         <div>
-            <i style="background:#097138"></i>
+            <i style="background:#5A9F71"></i>
             Amazônia
         </div>
 
         <div>
-            <i style="background:#FFD600"></i>
+            <i style="background:#F4D3B0"></i>
             Cerrado
         </div>
 
         <div>
-            <i style="background:#4E342E"></i>
+            <i style="background:#EFE39A"></i>
             Caatinga
         </div>
 
         <div>
-            <i style="background:#01579B"></i>
+            <i style="background:#F2C1C1"></i>
             Mata Atlântica
         </div>
 
         <div>
-            <i style="background:#F57C00"></i>
+            <i style="background:#8B6B5A"></i>
             Pantanal
         </div>
 
         <div>
-            <i style="background:#FF5252"></i>
+            <i style="background:#7FA9D9"></i>
             Pampa
         </div>
 
     `;
 
     return div;
+
 };
 
 legenda.addTo(map);
