@@ -1,104 +1,204 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Biomas do Brasil</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-        html, body {
+
+        html,
+        body {
+
             margin: 0;
             padding: 0;
             height: 100%;
+
         }
 
         #map {
+
             width: 100%;
             height: 100vh;
+
         }
 
         .popup-title {
+
             font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 8px;
+
         }
+
     </style>
+
 </head>
+
 <body>
 
-<div id="map"></div>
+    <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script>
-const map = L.map('map').setView([-15, -55], 4);
+    <script>
 
-L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-        attribution: '&copy; OpenStreetMap Contributors'
-    }
-).addTo(map);
+        const map = L.map('map').setView(
+            [-15, -55],
+            4
+        );
 
-fetch('./BiomasdoBrasil.geojson')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Erro ao carregar BiomasdoBrasil.geojson');
-        }
-        return response.json();
-    })
-    .then(data => {
-
-        const layer = L.geoJSON(data, {
-
-            style: function(feature) {
-                return {
-                    color: '#333333',
-                    weight: 1,
-                    fillOpacity: 0.5
-                };
-            },
-
-            onEachFeature: function(feature, layer) {
-
-                let popup = '';
-
-                if (feature.properties) {
-
-                    if (feature.properties.name) {
-                        popup += '<div class="popup-title">' +
-                                 feature.properties.name +
-                                 '</div>';
-                    }
-
-                    if (feature.properties.description) {
-                        popup += feature.properties.description;
-                    }
-
-                    if (!popup) {
-                        popup = Object.entries(feature.properties)
-                            .map(([k,v]) => '<b>' + k + '</b>: ' + v)
-                            .join('<br>');
-                    }
-                }
-
-                if (popup) {
-                    layer.bindPopup(popup);
-                }
+        L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution:
+                    '&copy; OpenStreetMap Contributors'
             }
+        ).addTo(map);
 
-        }).addTo(map);
+        fetch('./BiomasdoBrasil.geojson')
 
-        if (layer.getBounds().isValid()) {
-            map.fitBounds(layer.getBounds());
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        alert('Erro ao carregar o arquivo BiomasdoBrasil.geojson.');
-    });
-</script>
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Erro ao carregar o arquivo GeoJSON'
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(data => {
+
+                const geoLayer =
+                    L.geoJSON(data, {
+
+                        style: function (feature) {
+
+                            const p =
+                                feature.properties || {};
+
+                            return {
+
+                                color:
+                                    p.stroke ||
+                                    '#333333',
+
+                                weight:
+                                    p['stroke-width'] ||
+                                    1,
+
+                                opacity:
+                                    p['stroke-opacity'] ||
+                                    1,
+
+                                fillColor:
+                                    p.fill ||
+                                    '#888888',
+
+                                fillOpacity:
+                                    p['fill-opacity'] ||
+                                    0.50
+
+                            };
+
+                        },
+
+                        onEachFeature:
+                            function (
+                                feature,
+                                layer
+                            ) {
+
+                                const p =
+                                    feature.properties || {};
+
+                                let popup =
+                                    '';
+
+                                if (p.name) {
+
+                                    popup +=
+                                        '<div class="popup-title">' +
+                                        p.name +
+                                        '</div>';
+
+                                }
+
+                                if (p.Bioma) {
+
+                                    popup +=
+                                        '<b>Bioma:</b> ' +
+                                        p.Bioma +
+                                        '<br>';
+
+                                }
+
+                                if (p.CD_Bioma) {
+
+                                    popup +=
+                                        '<b>Código:</b> ' +
+                                        p.CD_Bioma +
+                                        '<br>';
+
+                                }
+
+                                if (
+                                    popup !== ''
+                                ) {
+
+                                    layer.bindPopup(
+                                        popup
+                                    );
+
+                                }
+
+                            }
+
+                    })
+
+                    .addTo(map);
+
+                if (
+                    geoLayer
+                        .getBounds()
+                        .isValid()
+                ) {
+
+                    map.fitBounds(
+                        geoLayer.getBounds()
+                    );
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error(
+                    error
+                );
+
+                alert(
+                    'Erro ao carregar BiomasdoBrasil.geojson'
+                );
+
+            });
+
+    </script>
 
 </body>
+
 </html>
