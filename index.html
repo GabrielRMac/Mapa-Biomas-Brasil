@@ -91,6 +91,32 @@ body {
 
 }
 
+.popup-button {
+
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 8px 12px;
+
+    background: #1976d2;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 4px;
+
+    font-weight: bold;
+
+}
+
+.popup-button:hover {
+
+    background: #125ea8;
+
+}
+
 </style>
 
 </head>
@@ -125,42 +151,60 @@ const biomasInfo = {
     "Amazônia": {
 
         descricao:
-            "Maior bioma do Brasil e maior floresta tropical do planeta."
+            "Maior bioma do Brasil e maior floresta tropical do planeta.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/amaz%C3%B4nia"
 
     },
 
     "Cerrado": {
 
         descricao:
-            "Maior savana da América do Sul e importante berço das águas brasileiras."
+            "Maior savana da América do Sul e importante berço das águas brasileiras.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/cerrado"
 
     },
 
     "Caatinga": {
 
         descricao:
-            "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido."
+            "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/caatinga"
 
     },
 
     "Mata Atlântica": {
 
         descricao:
-            "Uma das florestas mais biodiversas e ameaçadas do mundo."
+            "Uma das florestas mais biodiversas e ameaçadas do mundo.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/mata-atl%C3%A2ntica"
 
     },
 
     "Pantanal": {
 
         descricao:
-            "Maior área úmida continental do planeta."
+            "Maior área úmida continental do planeta.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/pantanal"
 
     },
 
     "Pampa": {
 
         descricao:
-            "Bioma de campos naturais predominante no sul do Brasil."
+            "Bioma de campos naturais predominante no sul do Brasil.",
+
+        url:
+            "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/pampa"
 
     }
 
@@ -250,9 +294,7 @@ fetch('./BiomasdoBrasil.geojson')
 
                 <div
                     class="popup-title"
-                    style="
-                        color:${p.stroke || '#333'};
-                    ">
+                    style="color:${p.stroke || '#333'};">
 
                     ${p.name || p.Bioma}
 
@@ -283,6 +325,16 @@ fetch('./BiomasdoBrasil.geojson')
                     ${info.descricao}
 
                 </div>
+
+                <a
+                    href="${info.url}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="popup-button">
+
+                    Saiba mais
+
+                </a>
                 `;
             }
 
