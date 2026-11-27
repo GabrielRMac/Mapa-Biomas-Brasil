@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Biomas do Brasil</title>
 
@@ -17,104 +16,65 @@
 
 html,
 body {
-
     margin: 0;
     padding: 0;
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
-
 }
 
 #map {
-
     width: 100%;
     height: 100vh;
-
 }
 
 .legend {
-
     background: white;
-
     padding: 12px;
-
     border-radius: 10px;
-
-    box-shadow:
-        0 0 10px rgba(0,0,0,.25);
-
+    box-shadow: 0 0 10px rgba(0,0,0,.25);
     line-height: 24px;
-
 }
 
 .legend h4 {
-
     margin: 0 0 10px 0;
-
 }
 
 .legend i {
-
     width: 18px;
-
     height: 18px;
-
     float: left;
-
     margin-right: 8px;
-
     opacity: .95;
-
 }
 
 .popup-card {
-
     min-width: 220px;
-
     max-width: 320px;
-
 }
 
 .popup-title {
-
     font-size: 18px;
-
     font-weight: bold;
-
     margin-bottom: 8px;
-
 }
 
 .popup-section {
-
     margin-top: 8px;
-
 }
 
 .popup-button {
-
     display: inline-block;
-
     margin-top: 12px;
-
     padding: 8px 12px;
-
     background: #1976d2;
-
     color: white;
-
     text-decoration: none;
-
     border-radius: 4px;
-
     font-weight: bold;
-
 }
 
 .popup-button:hover {
-
     background: #125ea8;
-
 }
 
 </style>
@@ -131,16 +91,12 @@ body {
 
 const map =
     L.map('map')
-     .setView(
-        [-15, -55],
-        4
-     );
+     .setView([-15, -55], 4);
 
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
-        attribution:
-            '&copy; OpenStreetMap Contributors'
+        attribution: '&copy; OpenStreetMap Contributors'
     }
 ).addTo(map);
 
@@ -151,7 +107,7 @@ const biomasInfo = {
     "Amazônia": {
 
         descricao:
-            "Maior bioma do Brasil e maior floresta tropical do planeta.",
+            "Maior bioma do Brasil e maior floresta tropical do planeta. Área Ocupada: ~4.196.943 km² (49,3% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/amaz%C3%B4nia"
@@ -161,7 +117,7 @@ const biomasInfo = {
     "Cerrado": {
 
         descricao:
-            "Maior savana da América do Sul e importante berço das águas brasileiras.",
+            "Maior savana da América do Sul e importante berço das águas brasileiras. Área Ocupada: ~2.036.448 km² (23,9% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/cerrado"
@@ -171,7 +127,7 @@ const biomasInfo = {
     "Caatinga": {
 
         descricao:
-            "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido.",
+            "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido. Área Ocupada: ~844.453 km² (9,9% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/caatinga"
@@ -181,7 +137,7 @@ const biomasInfo = {
     "Mata Atlântica": {
 
         descricao:
-            "Uma das florestas mais biodiversas e ameaçadas do mundo.",
+            "Uma das florestas mais biodiversas e ameaçadas do mundo. Área Ocupada: ~1.110.182 km² (13,0% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/mata-atl%C3%A2ntica"
@@ -191,7 +147,7 @@ const biomasInfo = {
     "Pantanal": {
 
         descricao:
-            "Maior área úmida continental do planeta.",
+            "Maior área úmida continental do planeta. Área Ocupada: ~150.355 km² (1,8% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/pantanal"
@@ -201,7 +157,7 @@ const biomasInfo = {
     "Pampa": {
 
         descricao:
-            "Bioma de campos naturais predominante no sul do Brasil.",
+            "Bioma de campos naturais predominante no sul do Brasil. Área Ocupada: ~176.496 km² (2,1% do território brasileiro).",
 
         url:
             "https://sites.google.com/ibpi.g12.br/biomas-conhecer-para-preservar/in%C3%ADcio/pampa"
@@ -215,33 +171,20 @@ function highlightFeature(e) {
     const layer = e.target;
 
     layer.setStyle({
-
         weight: 4,
-
         color: '#000000',
-
         fillOpacity: 0.8
-
     });
 
     layer.bringToFront();
-
 }
 
 function resetHighlight(e) {
-
-    geoLayer.resetStyle(
-        e.target
-    );
-
+    geoLayer.resetStyle(e.target);
 }
 
 function zoomToFeature(e) {
-
-    map.fitBounds(
-        e.target.getBounds()
-    );
-
+    map.fitBounds(e.target.getBounds());
 }
 
 fetch('./BiomasdoBrasil.geojson')
@@ -254,72 +197,49 @@ fetch('./BiomasdoBrasil.geojson')
 
         style: function(feature) {
 
-            const p =
-                feature.properties || {};
+            const p = feature.properties || {};
 
             return {
-
-                color:
-                    p.stroke || '#333333',
-
-                weight:
-                    p['stroke-width'] || 1,
-
-                opacity:
-                    p['stroke-opacity'] || 1,
-
-                fillColor:
-                    p.fill || '#999999',
-
-                fillOpacity:
-                    p['fill-opacity'] || 0.5
-
+                color: p.stroke || '#333333',
+                weight: p['stroke-width'] || 1,
+                opacity: p['stroke-opacity'] || 1,
+                fillColor: p.fill || '#999999',
+                fillOpacity: p['fill-opacity'] || 0.5
             };
 
         },
 
-        onEachFeature:
-        function(feature, layer) {
+        onEachFeature: function(feature, layer) {
 
-            const p =
-                feature.properties || {};
+            const p = feature.properties || {};
+            const info = biomasInfo[p.Bioma];
 
-            const info =
-                biomasInfo[p.Bioma];
+            let popup = `
 
-            let popup =
-
-            `
             <div class="popup-card">
 
-                <div
-                    class="popup-title"
-                    style="color:${p.stroke || '#333'};">
+                <div class="popup-title"
+                     style="color:${p.stroke || '#333'};">
 
                     ${p.name || p.Bioma}
 
                 </div>
 
                 <div>
-
                     <b>Bioma:</b>
                     ${p.Bioma || '-'}
-
                 </div>
 
                 <div>
-
                     <b>Código:</b>
                     ${p.CD_Bioma || '-'}
-
                 </div>
             `;
 
             if(info){
 
-                popup +=
+                popup += `
 
-                `
                 <div class="popup-section">
 
                     ${info.descricao}
@@ -338,42 +258,24 @@ fetch('./BiomasdoBrasil.geojson')
                 `;
             }
 
-            popup +=
-            `
+            popup += `
             </div>
             `;
 
-            layer.bindPopup(
-                popup
-            );
+            layer.bindPopup(popup);
 
             layer.on({
-
-                mouseover:
-                    highlightFeature,
-
-                mouseout:
-                    resetHighlight,
-
-                click:
-                    zoomToFeature
-
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: zoomToFeature
             });
 
         }
 
     }).addTo(map);
 
-    if(
-        geoLayer
-            .getBounds()
-            .isValid()
-    ){
-
-        map.fitBounds(
-            geoLayer.getBounds()
-        );
-
+    if (geoLayer.getBounds().isValid()) {
+        map.fitBounds(geoLayer.getBounds());
     }
 
 })
@@ -389,10 +291,7 @@ fetch('./BiomasdoBrasil.geojson')
 
 const legenda =
     L.control({
-
-        position:
-            'bottomright'
-
+        position: 'bottomright'
     });
 
 legenda.onAdd = function() {
