@@ -3,201 +3,402 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>Biomas do Brasil</title>
+<title>Biomas do Brasil</title>
 
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    <style>
+<style>
 
-        html,
-        body {
+html,
+body {
 
-            margin: 0;
-            padding: 0;
-            height: 100%;
+    margin:0;
+    padding:0;
+    height:100%;
 
-        }
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-        #map {
+}
 
-            width: 100%;
-            height: 100vh;
+#map {
 
-        }
+    width:100%;
+    height:100vh;
 
-        .popup-title {
+}
 
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 8px;
+.legend {
 
-        }
+    background:white;
 
-    </style>
+    padding:12px;
+
+    border-radius:8px;
+
+    box-shadow:
+        0 0 10px rgba(0,0,0,.25);
+
+    line-height:24px;
+
+}
+
+.legend h4 {
+
+    margin:0 0 10px 0;
+
+}
+
+.legend i {
+
+    width:18px;
+
+    height:18px;
+
+    float:left;
+
+    margin-right:8px;
+
+    opacity:.9;
+
+}
+
+.popup-card {
+
+    min-width:220px;
+
+    max-width:320px;
+
+}
+
+.popup-title {
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    margin-bottom:8px;
+
+}
+
+.popup-section {
+
+    margin-top:8px;
+
+}
+
+.popup-button {
+
+    display:inline-block;
+
+    margin-top:10px;
+
+    padding:6px 12px;
+
+    border-radius:4px;
+
+    text-decoration:none;
+
+    background:#1976d2;
+
+    color:white;
+
+}
+
+.popup-button:hover {
+
+    background:#125ea8;
+
+}
+
+</style>
 
 </head>
 
 <body>
 
-    <div id="map"></div>
+<div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script>
+<script>
 
-        const map = L.map('map').setView(
-            [-15, -55],
-            4
-        );
+const map = L.map('map')
+    .setView(
+        [-15,-55],
+        4
+    );
 
-        L.tileLayer(
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution:
-                    '&copy; OpenStreetMap Contributors'
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution:
+            '&copy; OpenStreetMap Contributors'
+    }
+).addTo(map);
+
+let geoLayer;
+
+const biomasInfo = {
+
+    "Amazônia": {
+        descricao:
+            "Maior bioma brasileiro e maior floresta tropical do planeta."
+    },
+
+    "Cerrado": {
+        descricao:
+            "Maior savana da América do Sul e importante berço das águas brasileiras."
+    },
+
+    "Caatinga": {
+        descricao:
+            "Único bioma exclusivamente brasileiro, adaptado ao clima semiárido."
+    },
+
+    "Mata Atlântica": {
+        descricao:
+            "Um dos biomas mais ricos em biodiversidade e mais ameaçados do mundo."
+    },
+
+    "Pantanal": {
+        descricao:
+            "Maior área úmida continental do planeta."
+    },
+
+    "Pampa": {
+        descricao:
+            "Bioma formado principalmente por campos naturais do sul do Brasil."
+    }
+
+};
+
+function highlightFeature(e) {
+
+    const layer = e.target;
+
+    layer.setStyle({
+
+        weight: 4,
+
+        color: '#000',
+
+        fillOpacity: 0.7
+
+    });
+
+    layer.bringToFront();
+}
+
+function resetHighlight(e) {
+
+    geoLayer.resetStyle(
+        e.target
+    );
+}
+
+function zoomToFeature(e) {
+
+    map.fitBounds(
+        e.target.getBounds()
+    );
+}
+
+fetch('./BiomasdoBrasil.geojson')
+
+.then(response => response.json())
+
+.then(data => {
+
+    geoLayer = L.geoJSON(data, {
+
+        style: function(feature) {
+
+            const p =
+                feature.properties || {};
+
+            return {
+
+                color:
+                    p.stroke ||
+                    '#333',
+
+                weight:
+                    p['stroke-width'] ||
+                    1,
+
+                opacity:
+                    p['stroke-opacity'] ||
+                    1,
+
+                fillColor:
+                    p.fill ||
+                    '#888',
+
+                fillOpacity:
+                    p['fill-opacity'] ||
+                    0.5
+
+            };
+
+        },
+
+        onEachFeature:
+        function(feature, layer) {
+
+            const p =
+                feature.properties || {};
+
+            const info =
+                biomasInfo[p.Bioma];
+
+            let popup =
+            `
+            <div class="popup-card">
+
+                <div
+                    class="popup-title"
+                    style="
+                        color:${p.stroke || '#333'};
+                    ">
+
+                    ${p.name || p.Bioma}
+
+                </div>
+
+                <div>
+
+                    <b>Bioma:</b>
+                    ${p.Bioma || '-'}
+
+                </div>
+
+                <div>
+
+                    <b>Código:</b>
+                    ${p.CD_Bioma || '-'}
+
+                </div>
+            `;
+
+            if(info){
+
+                popup +=
+                `
+                <div class="popup-section">
+
+                    ${info.descricao}
+
+                </div>
+                `;
             }
-        ).addTo(map);
 
-        fetch('./BiomasdoBrasil.geojson')
+            popup +=
+            `
+            </div>
+            `;
 
-            .then(response => {
+            layer.bindPopup(
+                popup
+            );
 
-                if (!response.ok) {
+            layer.on({
 
-                    throw new Error(
-                        'Erro ao carregar o arquivo GeoJSON'
-                    );
+                mouseover:
+                    highlightFeature,
 
-                }
+                mouseout:
+                    resetHighlight,
 
-                return response.json();
-
-            })
-
-            .then(data => {
-
-                const geoLayer =
-                    L.geoJSON(data, {
-
-                        style: function (feature) {
-
-                            const p =
-                                feature.properties || {};
-
-                            return {
-
-                                color:
-                                    p.stroke ||
-                                    '#333333',
-
-                                weight:
-                                    p['stroke-width'] ||
-                                    1,
-
-                                opacity:
-                                    p['stroke-opacity'] ||
-                                    1,
-
-                                fillColor:
-                                    p.fill ||
-                                    '#888888',
-
-                                fillOpacity:
-                                    p['fill-opacity'] ||
-                                    0.50
-
-                            };
-
-                        },
-
-                        onEachFeature:
-                            function (
-                                feature,
-                                layer
-                            ) {
-
-                                const p =
-                                    feature.properties || {};
-
-                                let popup =
-                                    '';
-
-                                if (p.name) {
-
-                                    popup +=
-                                        '<div class="popup-title">' +
-                                        p.name +
-                                        '</div>';
-
-                                }
-
-                                if (p.Bioma) {
-
-                                    popup +=
-                                        '<b>Bioma:</b> ' +
-                                        p.Bioma +
-                                        '<br>';
-
-                                }
-
-                                if (p.CD_Bioma) {
-
-                                    popup +=
-                                        '<b>Código:</b> ' +
-                                        p.CD_Bioma +
-                                        '<br>';
-
-                                }
-
-                                if (
-                                    popup !== ''
-                                ) {
-
-                                    layer.bindPopup(
-                                        popup
-                                    );
-
-                                }
-
-                            }
-
-                    })
-
-                    .addTo(map);
-
-                if (
-                    geoLayer
-                        .getBounds()
-                        .isValid()
-                ) {
-
-                    map.fitBounds(
-                        geoLayer.getBounds()
-                    );
-
-                }
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    error
-                );
-
-                alert(
-                    'Erro ao carregar BiomasdoBrasil.geojson'
-                );
+                click:
+                    zoomToFeature
 
             });
 
-    </script>
+        }
+
+    }).addTo(map);
+
+    if(
+        geoLayer
+           .getBounds()
+           .isValid()
+    ) {
+
+        map.fitBounds(
+            geoLayer.getBounds()
+        );
+
+    }
+
+});
+
+const legenda =
+    L.control(
+        {
+            position: 'bottomright'
+        }
+    );
+
+legenda.onAdd =
+function(map) {
+
+    const div =
+        L.DomUtil.create(
+            'div',
+            'legend'
+        );
+
+    div.innerHTML = `
+
+        <h4>Biomas</h4>
+
+        <div>
+            <i style="background:#097138"></i>
+            Amazônia
+        </div>
+
+        <div>
+            <i style="background:#FFD600"></i>
+            Cerrado
+        </div>
+
+        <div>
+            <i style="background:#4E342E"></i>
+            Caatinga
+        </div>
+
+        <div>
+            <i style="background:#01579B"></i>
+            Mata Atlântica
+        </div>
+
+        <div>
+            <i style="background:#F57C00"></i>
+            Pantanal
+        </div>
+
+        <div>
+            <i style="background:#FF5252"></i>
+            Pampa
+        </div>
+
+    `;
+
+    return div;
+};
+
+legenda.addTo(map);
+
+</script>
 
 </body>
 
