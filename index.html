@@ -1,13 +1,11 @@
-html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa My Maps</title>
+    <title>Biomas do Brasil</title>
 
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         html, body {
@@ -33,59 +31,73 @@ html
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
-
 <script>
+const map = L.map('map').setView([-15, -55], 4);
 
-    // Mapa inicial
-    const map = L.map('map');
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '&copy; OpenStreetMap Contributors'
+    }
+).addTo(map);
 
-    // Camada OpenStreetMap
-    L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            attribution:
-                '&copy; OpenStreetMap Contributors'
+fetch('./BiomasdoBrasil.geojson')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao carregar BiomasdoBrasil.geojson');
         }
-    ).addTo(map);
+        return response.json();
+    })
+    .then(data => {
 
-    // Camada onde o KML será carregado
-    const kmlLayer = omnivore.kml('./BiomasdoBrasil2.kmz');
+        const layer = L.geoJSON(data, {
 
-    kmlLayer.on('ready', function () {
+            style: function(feature) {
+                return {
+                    color: '#333333',
+                    weight: 1,
+                    fillOpacity: 0.5
+                };
+            },
 
-        map.fitBounds(kmlLayer.getBounds());
-
-        kmlLayer.eachLayer(function(layer) {
-
-            if (layer.feature &&
-                layer.feature.properties) {
-
-                const props = layer.feature.properties;
+            onEachFeature: function(feature, layer) {
 
                 let popup = '';
 
-                if (props.name) {
-                    popup +=
-                        '<div class="popup-title">' +
-                        props.name +
-                        '</div>';
-                }
+                if (feature.properties) {
 
-                if (props.description) {
-                    popup += props.description;
+                    if (feature.properties.name) {
+                        popup += '<div class="popup-title">' +
+                                 feature.properties.name +
+                                 '</div>';
+                    }
+
+                    if (feature.properties.description) {
+                        popup += feature.properties.description;
+                    }
+
+                    if (!popup) {
+                        popup = Object.entries(feature.properties)
+                            .map(([k,v]) => '<b>' + k + '</b>: ' + v)
+                            .join('<br>');
+                    }
                 }
 
                 if (popup) {
                     layer.bindPopup(popup);
                 }
             }
-        });
 
+        }).addTo(map);
+
+        if (layer.getBounds().isValid()) {
+            map.fitBounds(layer.getBounds());
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Erro ao carregar o arquivo BiomasdoBrasil.geojson.');
     });
-
-    kmlLayer.addTo(map);
-
 </script>
 
 </body>
